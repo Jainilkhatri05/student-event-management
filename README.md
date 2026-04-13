@@ -31,7 +31,7 @@ Registrations (registration_id, student_id, event_id, registered_at)
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/YOUR_USERNAME/student-event-management.git
+git clone https://github.com/Jainilkhatri05/student-event-management.git
 cd student-event-management
 
 # 2. Install dependencies
