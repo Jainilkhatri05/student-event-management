@@ -1,21 +1,20 @@
 // app/api/events/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
+import { query, execute } from '@/lib/db';
 
 export async function GET() {
   try {
-    const db = getDb();
-    const events = db.prepare(`
-      SELECT 
+    const events = await query(`
+      SELECT
         e.*,
-        s.name as organizer_name,
-        COUNT(r.registration_id) as registration_count
+        s.name AS organizer_name,
+        COUNT(r.registration_id) AS registration_count
       FROM Events e
       LEFT JOIN Students s ON e.organizer_id = s.student_id
       LEFT JOIN Registrations r ON e.event_id = r.event_id
       GROUP BY e.event_id
       ORDER BY e.event_date ASC
-    `).all();
+    `);
     return NextResponse.json(events);
   } catch (error) {
     console.error('GET /api/events error:', error);
@@ -35,26 +34,19 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const db = getDb();
-    const stmt = db.prepare(
-      'INSERT INTO Events (title, description, event_date, location, organizer_id) VALUES (?, ?, ?, ?, ?)'
-    );
-    const result = stmt.run(
-      title,
-      description || '',
-      event_date,
-      location,
-      organizer_id || null
+    const result = await execute(
+      'INSERT INTO Events (title, description, event_date, location, organizer_id) VALUES (?, ?, ?, ?, ?)',
+      [title, description || '', event_date, location, organizer_id || null]
     );
 
-    const newEvent = db.prepare(`
-      SELECT e.*, s.name as organizer_name, 0 as registration_count
+    const newEvent = await query(`
+      SELECT e.*, s.name AS organizer_name, 0 AS registration_count
       FROM Events e
       LEFT JOIN Students s ON e.organizer_id = s.student_id
       WHERE e.event_id = ?
-    `).get(result.lastInsertRowid);
+    `, [result.insertId]);
 
-    return NextResponse.json(newEvent, { status: 201 });
+    return NextResponse.json(newEvent[0], { status: 201 });
   } catch (error) {
     console.error('POST /api/events error:', error);
     return NextResponse.json({ error: 'Failed to create event' }, { status: 500 });

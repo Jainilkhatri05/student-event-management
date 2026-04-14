@@ -1,11 +1,10 @@
 // app/api/students/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
+import { query, execute } from '@/lib/db';
 
 export async function GET() {
   try {
-    const db = getDb();
-    const students = db.prepare('SELECT * FROM Students ORDER BY name ASC').all();
+    const students = await query('SELECT * FROM Students ORDER BY name ASC');
     return NextResponse.json(students);
   } catch (error) {
     console.error('GET /api/students error:', error);
@@ -25,17 +24,20 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const db = getDb();
-    const stmt = db.prepare(
-      'INSERT INTO Students (name, email, department) VALUES (?, ?, ?)'
+    const result = await execute(
+      'INSERT INTO Students (name, email, department) VALUES (?, ?, ?)',
+      [name, email, department || '']
     );
-    const result = stmt.run(name, email, department || '');
-    const newStudent = db.prepare('SELECT * FROM Students WHERE student_id = ?').get(result.lastInsertRowid);
 
-    return NextResponse.json(newStudent, { status: 201 });
+    const newStudent = await query(
+      'SELECT * FROM Students WHERE student_id = ?',
+      [result.insertId]
+    );
+
+    return NextResponse.json(newStudent[0], { status: 201 });
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : 'Unknown error';
-    if (msg.includes('UNIQUE constraint')) {
+    if (msg.includes('Duplicate entry') || msg.includes('ER_DUP_ENTRY')) {
       return NextResponse.json({ error: 'Email already registered' }, { status: 409 });
     }
     console.error('POST /api/students error:', error);
