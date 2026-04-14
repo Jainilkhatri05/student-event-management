@@ -15,7 +15,7 @@ export async function GET(
       LEFT JOIN Students s ON e.organizer_id = s.student_id
       LEFT JOIN Registrations r ON e.event_id = r.event_id
       WHERE e.event_id = ?
-      GROUP BY e.event_id
+      GROUP BY e.event_id, s.name
     `, [Number(id)]);
 
     if (!event) {
