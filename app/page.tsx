@@ -58,8 +58,9 @@ export default function DashboardPage() {
           <Sparkles size={12} />
           <span>Student Event Management System</span>
         </div>
-        <h1 className="text-5xl font-black tracking-tight mb-3 text-gradient-primary">
+        <h1 className="text-5xl font-black tracking-tight mb-3 text-gradient-primary flex items-center gap-3">
           Upcoming Events
+          <span className="text-[10px] bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-0.5 rounded font-mono uppercase tracking-tighter">MySQL Live</span>
         </h1>
         <p className="text-white/40 text-lg max-w-xl">
           Discover workshops, hackathons, sports events, and more. Register in one click.

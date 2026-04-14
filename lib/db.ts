@@ -9,12 +9,16 @@ let pool: mysql.Pool | null = null;
 export function getPool(): mysql.Pool {
   if (pool) return pool;
 
+  console.log('--- INITIALIZING MYSQL CONNECTION POOL ---');
   pool = mysql.createPool({
     host:     process.env.MYSQL_HOST     || 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com',
     port:     Number(process.env.MYSQL_PORT) || 4000,
     user:     process.env.MYSQL_USER     || 'XYWmVqzjiVgrs83.root',
     password: process.env.MYSQL_PASSWORD || '',
     database: process.env.MYSQL_DATABASE || 'test',
+    // <h1 className="text-5xl font-black tracking-tight mb-3 text-gradient-primary">
+    //   Upcoming Events <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded ml-2">MySQL Live</span>
+    // </h1>
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
@@ -25,6 +29,7 @@ export function getPool(): mysql.Pool {
     },
   });
 
+  console.log('--- MYSQL CONNECTION POOL INITIALIZED ---');
   return pool;
 }
 
