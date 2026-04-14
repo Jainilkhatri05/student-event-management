@@ -12,7 +12,7 @@ export async function GET() {
       FROM Events e
       LEFT JOIN Students s ON e.organizer_id = s.student_id
       LEFT JOIN Registrations r ON e.event_id = r.event_id
-      GROUP BY e.event_id
+      GROUP BY e.event_id, s.name
       ORDER BY e.event_date ASC
     `);
     return NextResponse.json(events);
