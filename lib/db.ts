@@ -31,7 +31,7 @@ export function getPool(): mysql.Pool {
 // Helper: run a query and return all rows
 export async function query<T = mysql.RowDataPacket>(
   sql: string,
-  params: unknown[] = []
+  params: any[] = []
 ): Promise<T[]> {
   const db = getPool();
   const [rows] = await db.execute<mysql.RowDataPacket[]>(sql, params);
@@ -41,7 +41,7 @@ export async function query<T = mysql.RowDataPacket>(
 // Helper: run a query and return first row or null
 export async function queryOne<T = mysql.RowDataPacket>(
   sql: string,
-  params: unknown[] = []
+  params: any[] = []
 ): Promise<T | null> {
   const rows = await query<T>(sql, params);
   return rows[0] ?? null;
@@ -50,7 +50,7 @@ export async function queryOne<T = mysql.RowDataPacket>(
 // Helper: run an INSERT / UPDATE / DELETE and return OkPacket info
 export async function execute(
   sql: string,
-  params: unknown[] = []
+  params: any[] = []
 ): Promise<mysql.ResultSetHeader> {
   const db = getPool();
   const [result] = await db.execute<mysql.ResultSetHeader>(sql, params);
